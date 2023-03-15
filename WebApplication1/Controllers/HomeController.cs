@@ -3,14 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
+using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
+        private ApplicationDbContext _dbContext;
+        public HomeController() 
+        {
+            _dbContext = new ApplicationDbContext();
+        }
+
         public ActionResult Index()
         {
-            return View();
+            var upcomningCourses = _dbContext.Courses
+                .Include(c => c.Lecturer)
+                .Include(c => c.Category)
+                .Where(c => c.DateTime > DateTime.Now);
+            return View(upcomningCourses);
         }
 
         public ActionResult About()
