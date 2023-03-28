@@ -14,28 +14,26 @@ namespace WebApplication1.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         public CoursesController()
-        { 
-        _dbContext= new ApplicationDbContext();
+        {
+            _dbContext = new ApplicationDbContext();
         }
         // GET: Courses
-        [Authorize]
         public ActionResult Create()
         {
-            var viewModel = new CoursesViewModel
+            var viewModel = new CourseViewModel
             {
                 Categories = _dbContext.Categories.ToList()
             };
             return View(viewModel);
         }
-
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CoursesViewModel viewModel)
+        public ActionResult Create(CourseViewModel viewModel)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                viewModel.Categories= _dbContext.Categories.ToList();
+                viewModel.Categories = _dbContext.Categories.ToList();
                 return View("Create", viewModel);
             }
             var course = new Course
@@ -43,23 +41,24 @@ namespace WebApplication1.Controllers
                 LecturerId = User.Identity.GetUserId(),
                 DateTime = viewModel.GetDateTime(),
                 CategoryId = viewModel.Category,
-                Place = viewModel.Place
+                Place = viewModel.Place,
             };
             _dbContext.Courses.Add(course);
             _dbContext.SaveChanges();
+
             return RedirectToAction("Index", "Home");
         }
         [Authorize]
         public ActionResult Attending()
-        { 
-        var userId = User.Identity.GetUserId();
+        {
+            var userId = User.Identity.GetUserId();
 
-        var courses = _dbContext.Attendances
-        .Where(a => a.AttendeeId== userId)
-        .Select(a => a.Course)
-        .Include(l => l.Lecturer)
-        .Include(l => l.Category)
-        .ToList();
+            var courses = _dbContext.Attendances
+                .Where(a => a.AttendeeId == userId)
+                .Select(a => a.Course)
+                .Include(l => l.Lecturer)
+                .Include(l => l.Category)
+                .ToList();
 
             var viewModel = new CoursesViewModel
             {
@@ -67,6 +66,8 @@ namespace WebApplication1.Controllers
                 ShowAction = User.Identity.IsAuthenticated
             };
             return View(viewModel);
+
         }
+
     }
 }

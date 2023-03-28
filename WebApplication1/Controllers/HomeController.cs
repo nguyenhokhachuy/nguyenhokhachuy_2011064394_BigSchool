@@ -12,23 +12,23 @@ namespace WebApplication1.Controllers
     public class HomeController : Controller
     {
         private ApplicationDbContext _dbContext;
-        public HomeController() 
+        public HomeController()
         {
             _dbContext = new ApplicationDbContext();
         }
-
         public ActionResult Index()
         {
-            var upcomningCourses = _dbContext.Courses
-                .Include(c => c.Lecturer)
-                .Include(c => c.Category)
-                .Where(c => c.DateTime > DateTime.Now);
+            var upcommingCourses = _dbContext.Courses
+            .Include(c => c.Lecturer)
+            .Include(c => c.Category)
+            .Where(c => c.DateTime > DateTime.Now);
 
             var viewModel = new CoursesViewModel
             {
-                UpcommingCourses = upcomningCourses,
+                UpcommingCourses = upcommingCourses,
                 ShowAction = User.Identity.IsAuthenticated
             };
+
             return View(viewModel);
         }
 
